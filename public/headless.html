@@ -65,11 +65,13 @@
         r.loadAnnotations('annotations.w3c.json');
 
         r.on('selectAnnotation', function(a) {
-          console.log('selected', a);
+          const text = '"' + a.target.selector.find(s => s.type === "TextQuoteSelector").exact + '"';
+          console.log('selected', text, a);
         });
 
         r.on('createAnnotation', function(a) {
-          console.log('created', a);
+          const text = '"' + a.target.selector.find(s => s.type === "TextQuoteSelector").exact + '"';
+          console.log('created', text, a);
         });
 
         r.on('updateAnnotation', function(annotation, previous) {

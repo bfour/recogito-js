@@ -45,6 +45,24 @@
       }
     }, {
       "@context": "http://www.w3.org/ns/anno.jsonld",
+      "id": "#447d4bea-08dc-4bd0-ae51-31f5ed7a00ee",
+      "type": "Annotation",
+      "body": [{
+        "type": "TextualBody",
+        "value": "Shorter comment"
+      }],
+      "target": {
+        "selector": [{
+          "type": "TextQuoteSelector",
+          "exact": "who escaped death battle"
+        }, {
+          "type": "TextPositionSelector",
+          "start": 634,
+          "end": 651
+        }]
+      }
+    }, {
+      "@context": "http://www.w3.org/ns/anno.jsonld",
       "id": "#d7197c87-b45d-4217-9c4f-27573030448f",
       "type": "Annotation",
       "body": [{
