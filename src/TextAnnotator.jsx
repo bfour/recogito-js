@@ -215,7 +215,7 @@ export default class TextAnnotator extends Component {
   onCancelAnnotation = annotation => {
     this.clearState();
     this.selectionHandler.clearSelection();
-    this.props.onCancelSelected(annotation);
+    if (annotation) this.props.onCancelSelected(annotation);
   }
 
   /************************/
