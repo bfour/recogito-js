@@ -146,8 +146,9 @@ export default class Highlighter {
    */
   applyStyles = (annotation, spans) => {
     let extraClasses = '';
-    if (this.formatter && this.formatter(annotation)) {
-      const format = this.formatter(annotation);
+    const format = this.formatter ? this.formatter(annotation) : null;
+
+    if (format) {
       if (typeof format === 'string' || format instanceof String) {
         // string: append to class list
         extraClasses = format;
@@ -166,8 +167,12 @@ export default class Highlighter {
         }
       }  
     }
+
     // apply extra classes if there are any; ensure .r6o-annotation added regardless
     spans.forEach(span => span.className = `r6o-annotation ${extraClasses}`.trim());
+
+    // apply special class for first element
+    spans[0].className = spans[0].className + " r6o-first";
   }
 
   bindAnnotation = (annotation, elements) => {
