@@ -17,7 +17,7 @@ export default class Highlighter {
 
     // Sorting top to bottom will render the overlapping annonation borders better
     highlights.sort((a, b) => {
-      return a.start != b.start ? a.start - b.start : a.end - a.end
+      return a.start != b.start ? a.start - b.start : b.end - a.end
     });
 
     // Render loop
@@ -319,13 +319,13 @@ export default class Highlighter {
             getAnnotationsRecursive(parent, annotations) : annotations;
         },
 
-        sortByRangeLength = function(annotations) {
+        sortByStart = function(annotations) {
           return annotations.sort(function(a, b) {
-            return (a.end - a.start) - (b.end - b.start);
+            return a.start != b.start ? a.start - b.start : b.end - a.end
           });
         };
 
-    return sortByRangeLength(getAnnotationsRecursive(element));
+    return sortByStart(getAnnotationsRecursive(element));
   }
 
 }
