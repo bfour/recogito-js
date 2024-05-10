@@ -15,9 +15,10 @@ export default class Highlighter {
     // Discard all annotations without a TextPositionSelector
     const highlights = annotations.filter(a => a.selector('TextPositionSelector'));
 
-    // Sorting bottom to top significantly speeds things up,
-    // because walkTextNodes will have a lot less to walk 
-    highlights.sort((a, b) => b.start - a.start);
+    // Sorting top to bottom will render the overlapping annonation borders better
+    highlights.sort((a, b) => {
+      return a.start != b.start ? a.start - b.start : a.end - a.end
+    });
 
     // Render loop
     const render = annotations => {
