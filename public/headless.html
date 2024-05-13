@@ -28,6 +28,18 @@
         font-size:17px;
         line-height:27px;
       }
+
+      .r6o-annotation.multi {
+        border-color: #000000;
+      }
+
+      .r6o-annotation.a {
+        border-color: #880000;
+      }
+      
+      .r6o-annotation.b {
+        border-color: #008800;
+      }      
     </style>
   </head>
   <body>
@@ -59,7 +71,30 @@
         // Intialize Recogito
         var r = Recogito.init({
           content: 'content',
-          disableEditor: true
+          disableEditor: true,
+          formatter: (annotation) => {
+            const tags = annotation.body.filter(b => b.purpose === 'tagging').map(b => b.value);
+            const text = annotation.target.selector.find(s => s.type === 'TextQuoteSelector')?.exact;
+            console.debug('format', tags, text, annotation.level);
+
+            const result = {
+              className: ""
+            };
+            
+            if (tags.length > 1) {
+              result.className =  "multi";
+            } else if (tags.includes('A Tag')) {
+              result.className = "a";
+            } else if (tags.includes('Another Tag')) {
+              result.className = "b";
+            }
+
+            if (annotation.level) {
+              result.style = "padding-bottom: " + annotation.level * 3 + "px";
+            }
+
+            return result;
+          }          
         });
 
         r.loadAnnotations('annotations.w3c.json');
