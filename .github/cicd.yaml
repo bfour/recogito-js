@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: echo "::remove-matcher owner=tsc::"
+      - run: echo "::remove-matcher owner=eslint-compact::"
+      - run: echo "::remove-matcher owner=eslint-stylish::"
+      - run: node --version
+      - run: npm clean-install
+      - run: npm build
+      - if: startsWith(github.ref, 'refs/tags/') 
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_API_KEY }}
+          package: package.json
+          access: public
