@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/recogito/recogito-js.git"
+    "url": "git+https://github.com/SamhammerAG/recogito-js.git"
   },
   "keywords": [
     "RecogitoJS",
@@ -24,9 +24,9 @@
     "url": "https://www.patreon.com/rainersimon"
   },
   "bugs": {
-    "url": "https://github.com/recogito/recogito-js/issues"
+    "url": "https://github.com/SamhammerAG/recogito-js/issues"
   },
-  "homepage": "https://github.com/recogito/recogito-js#readme",
+  "homepage": "https://github.com/SamhammerAG/recogito-js#readme",
   "babel": {
     "presets": [
       "@babel/preset-env",
