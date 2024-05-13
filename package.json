@@ -1,5 +1,5 @@
 {
-  "name": "@recogito/recogito-js",
+  "name": "@samhammer/recogito-js",
   "version": "1.8.7",
   "description": "A JavaScript library for text annotation",
   "main": "dist/recogito.min.js",
