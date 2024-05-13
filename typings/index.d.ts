@@ -20,7 +20,7 @@ declare module "@samhammer/recogito-js" {
     export interface FormatterResult{
         className: string;
         style: string;
-        [key?: string]: string;
+        [key: string]: string;
     }
 
     export interface RecogitoOptions {
