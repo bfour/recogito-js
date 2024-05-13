@@ -26,6 +26,22 @@
         font-size:17px;
         line-height:27px;
       }
+
+      .r6o-annotation.multi {
+        border-color: #000000;
+      }
+
+      .r6o-annotation.a {
+        border-color: #880000;
+      }
+      
+      .r6o-annotation.b {
+        border-color: #008800;
+      }
+
+      .r6o-annotation .r6o-annotation {
+        padding-bottom: 3px;
+      }
     </style>
   </head>
   <body>
@@ -92,7 +108,22 @@
             { widget: 'COMMENT' },
             { widget: 'TAG', vocabulary: [ 'Place', 'Person', 'Event', 'Organization', 'Animal' ] }
           ],
-          relationVocabulary: [ 'isRelated', 'isPartOf', 'isSameAs ']
+          relationVocabulary: [ 'isRelated', 'isPartOf', 'isSameAs '],
+          formatter: (annotation) => {
+            const tags = annotation.body.filter(b => b.purpose === 'tagging').map(b => b.value);
+            const text = annotation.target.selector.find(s => s.type === 'TextQuoteSelector')?.exact;
+
+            if (tags.length > 1) {
+              return "multi";
+            } else if (tags.includes('A Tag')) {
+              return "a";
+            } else if (tags.includes('Another Tag')) {
+              return "b";
+            }
+
+            console.debug('format', tags, text);
+            return "";
+          }
         });
 
         r.loadAnnotations('annotations.w3c.json')
