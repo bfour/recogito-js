@@ -31,7 +31,8 @@
       "type": "Annotation",
       "body": [{
         "type": "TextualBody",
-        "value": "Another comment"
+        "value": "Another Tag",
+        "purpose": "tagging"
       }],
       "target": {
         "selector": [{
@@ -49,7 +50,8 @@
       "type": "Annotation",
       "body": [{
         "type": "TextualBody",
-        "value": "Shorter comment"
+        "value": "A Tag",
+        "purpose": "tagging"
       }],
       "target": {
         "selector": [{
@@ -67,7 +69,8 @@
       "type": "Annotation",
       "body": [{
         "type": "TextualBody",
-        "value": "Comment..."
+        "value": "Some Comment",
+        "purpose": "commenting"        
       }],
       "target": {
         "selector": [{
