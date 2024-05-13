@@ -17,12 +17,18 @@ declare module "@samhammer/recogito-js" {
         off(eventName: RecogitoEvent, callback: Function);
     }
 
+    export interface FormatterResult{
+        className: string;
+        style: string;
+        [key?: string]: string;
+    }
+
     export interface RecogitoOptions {
         content: string | HTMLElement;
         editorAutoPosition?: boolean;
         readOnly?: boolean;
         disableEditor?: boolean;
-        formatter?: (annotation: Annotation) => string;
+        formatter?: (annotation: Annotation) => string | FormatterResult;
         mode?: "html" | "pre";
     }
 
