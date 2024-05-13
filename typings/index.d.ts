@@ -64,5 +64,6 @@ declare module "@samhammer/recogito-js" {
         target: {
             selector: AnnotationSelection[];
         };
+        level?: number
     }
 }

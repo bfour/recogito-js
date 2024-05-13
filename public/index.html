@@ -38,10 +38,6 @@
       .r6o-annotation.b {
         border-color: #008800;
       }
-
-      .r6o-annotation .r6o-annotation {
-        padding-bottom: 3px;
-      }
     </style>
   </head>
   <body>
@@ -112,17 +108,25 @@
           formatter: (annotation) => {
             const tags = annotation.body.filter(b => b.purpose === 'tagging').map(b => b.value);
             const text = annotation.target.selector.find(s => s.type === 'TextQuoteSelector')?.exact;
+            console.debug('format', tags, text, annotation.level);
 
+            const result = {
+              className: ""
+            };
+            
             if (tags.length > 1) {
-              return "multi";
+              result.className =  "multi";
             } else if (tags.includes('A Tag')) {
-              return "a";
+              result.className = "a";
             } else if (tags.includes('Another Tag')) {
-              return "b";
+              result.className = "b";
             }
 
-            console.debug('format', tags, text);
-            return "";
+            if (annotation.level) {
+              result.style = "padding-bottom: " + annotation.level * 3 + "px";
+            }
+
+            return result;
           }
         });
 

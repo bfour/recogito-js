@@ -26,7 +26,7 @@ export default class Highlighter {
       const remainder = annotations.slice(RENDER_BATCH_SIZE);
 
       requestAnimationFrame(() => {
-        batch.forEach(this._addAnnotation);
+        batch.forEach((annotation) => this._addAnnotation(annotation));
         if (remainder.length > 0) {
           render(remainder);
         } else {
@@ -39,7 +39,7 @@ export default class Highlighter {
     render(highlights);
   })
 
-  _addAnnotation = annotation => {
+  _addAnnotation = (annotation, level) => {
     try {
       const [ domStart, domEnd ] = this.charOffsetsToDOMPosition([ annotation.start, annotation.end ]);
 
@@ -48,6 +48,9 @@ export default class Highlighter {
       range.setEnd(domEnd.node, domEnd.offset);
 
       const spans = this.wrapRange(range);
+
+      //console.debug("_addAnnotation", annotation.id, level);
+      this._applyLevel(annotation, spans, level);
       this.applyStyles(annotation, spans);
       this.bindAnnotation(annotation, spans);
     } catch (error) {
@@ -57,10 +60,43 @@ export default class Highlighter {
     }
   }
 
+  _applyLevel = (annotation, spans, existingLevel) => {
+      if (existingLevel) {
+        annotation.level = existingLevel;
+        return;
+      }
+
+      const overlaps = [];
+      spans.forEach(span => {
+        const spanOverlaps = this.getAnnotationsAt(span).filter(a => a !== undefined);
+        overlaps.push(...spanOverlaps);
+      })
+
+      const levels = overlaps.map(a => a.level).filter(l => l !== undefined);
+      let level = this._getFreeLevel(levels);
+
+      annotation.level = level;
+      //console.debug("_applyLevel", annotation.id, level);      
+  }
+
+  _getFreeLevel = (levels) => {
+    let nextLevel = 1;
+    
+    while (true) {
+      if (!levels.includes(nextLevel)) return nextLevel;
+      nextLevel = nextLevel + 1;
+    }
+  }
+
   findAnnotationSpans = annotationOrId => {
     const id = annotationOrId.id || annotationOrId;
     const spans =Array.from(document.querySelectorAll(`.r6o-annotation[data-id="${id}"]`));
     return spans;
+  }
+
+  getAnnotation = annotationOrId => {
+    const spans = this.findAnnotationSpans(annotationOrId);
+    return spans.length > 0 ? spans[0].annotation : null;
   }
 
   getAllAnnotations = () => {
@@ -76,10 +112,14 @@ export default class Highlighter {
     const spans = uniqueItems(annoSpans.concat(prevSpans));
 
     if (spans.length > 0) {
+      const annoData = this.getAnnotation(annotation);
+      const level = annoData ? annoData.level : null;
+      //console.debug("addOrUpdateAnnotation", annoData, level);    
+
       // naive approach
       this._unwrapHighlightings(spans);
       this.el.normalize();
-      this._addAnnotation(annotation);
+      this._addAnnotation(annotation, level);
     } else {
       this._addAnnotation(annotation);
     }
