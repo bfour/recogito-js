@@ -3,6 +3,7 @@
   "version": "1.8.7",
   "description": "A JavaScript library for text annotation",
   "main": "dist/recogito.min.js",
+  "typings": "typings/index.d.ts",
   "scripts": {
     "start": "webpack serve --open --mode=development",
     "build": "webpack --mode=production",

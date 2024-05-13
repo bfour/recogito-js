@@ -1,0 +1,62 @@
+declare module "@samhammer/recogito-js" {
+    export type RecogitoEvent = "createAnnotation" | "deleteAnnotation" | "selectAnnotation" | "updateAnnotation";
+
+    export class Recogito {
+        constructor(options: RecogitoOptions);
+        set disableSelect(select: boolean);
+
+        addAnnotation: (annotation: Annotation) => void;
+        removeAnnotation: (annotation: Annotation) => void;
+
+        getAnnotations: () => Annotation[];
+        setAnnotations(annotations: Annotation[]);
+        clearAnnotations: () => void;
+        destroy(): void;
+
+        on(eventName: RecogitoEvent, callback: Function);
+        off(eventName: RecogitoEvent, callback: Function);
+    }
+
+    export interface RecogitoOptions {
+        content: string | HTMLElement;
+        editorAutoPosition?: boolean;
+        readOnly?: boolean;
+        disableEditor?: boolean;
+        formatter?: (annotation: Annotation) => string;
+        mode?: "html" | "pre";
+    }
+
+    export type AnnotationSelection = AnnotationSelectionQuote | AnnotationSelectionPosition;
+
+    export interface AnnotationSelectionQuote {
+        type: "TextQuoteSelector";
+        exact: string;
+    }
+
+    export interface AnnotationSelectionPosition {
+        type: "TextPositionSelector";
+        start: number;
+        end: number;
+    }
+
+    export interface AnnotationBody {
+        type: "TextualBody";
+        value: string;
+        purpose: "commenting" | "tagging";
+        created?: string;
+        creator?: {
+            id: string;
+            name: string;
+        };
+    }
+
+    export interface Annotation {
+        id: string;
+        context: string;
+        type: string;
+        body: AnnotationBody[];
+        target: {
+            selector: AnnotationSelection[];
+        };
+    }
+}
