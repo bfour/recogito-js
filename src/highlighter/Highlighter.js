@@ -61,7 +61,7 @@ export default class Highlighter {
   }
 
   _applyLevel = (annotation, spans, existingLevel) => {
-      if (existingLevel) {
+      if (existingLevel !== undefined) {
         annotation.level = existingLevel;
         return;
       }
@@ -80,7 +80,7 @@ export default class Highlighter {
   }
 
   _getFreeLevel = (levels) => {
-    let nextLevel = 1;
+    let nextLevel = 0;
     
     while (true) {
       if (!levels.includes(nextLevel)) return nextLevel;
