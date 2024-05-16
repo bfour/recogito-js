@@ -97,7 +97,8 @@ export default class SelectionHandler extends EventEmitter {
               selection: top,
               element: this.document.querySelector(`.r6o-annotation[data-id="${top.id}"]`)
             });
-          } else {
+          } else if (stub.quote) {
+            // User selected new text (but skip empty selections)
             this.emit('select', {
               selection: stub,
               element: selectedRange
