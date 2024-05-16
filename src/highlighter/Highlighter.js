@@ -212,8 +212,9 @@ export default class Highlighter {
     // apply extra classes if there are any; ensure .r6o-annotation added regardless
     spans.forEach(span => span.className = `r6o-annotation ${extraClasses}`.trim());
 
-    // apply special class for first element
-    spans[0].className = spans[0].className + " r6o-first";
+    // get first span with content & apply special class
+    const firstSpan = spans.find(s => s.innerText) ?? spans[0];
+    firstSpan.className = firstSpan.className + " r6o-first";
   }
 
   bindAnnotation = (annotation, elements) => {
