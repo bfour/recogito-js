@@ -62,3 +62,9 @@ Full documentation is [on the Wiki](https://github.com/recogito/recogito-js/wiki
 [BSD 3-Clause](LICENSE) (= feel free to use this code in whatever way
 you wish. But keep the attribution/license file, and if this code
 breaks something, don't complain to us :-)
+
+## How to publish
+
+-   Create & Push a tag with new version number
+-   The CICD actions will take this version number for npm package automatically
+-   Check github action to validated, that package was released to npm registry.
