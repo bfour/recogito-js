@@ -2,14 +2,34 @@ const RENDER_BATCH_SIZE = 100; // Number of annotations to render in one frame
 
 const uniqueItems = items => Array.from(new Set(items))
 
+const baseFormatter = (annotation) => {
+  const tags = annotation.body.filter(b => b.purpose === 'tagging').map(b => b.value);
+  const text = annotation.target.selector.find(s => s.type === 'TextQuoteSelector')?.exact;
+  console.debug('format', tags, text, annotation.level);
+
+  const result = {
+    className: ""
+  };
+
+  if (tags.length > 1) {
+    result.className = "multi";
+  }
+
+  if (annotation.level) {
+    result.style = "padding-bottom: " + annotation.level * 3 + "px";
+  }
+
+  return result;
+}
+
 export default class Highlighter {
 
   constructor(element, formatter) {
     this.el = element;
-    this.formatter = formatter;
+    this.formatter = formatter ?? baseFormatter;
   }
 
-  init = annotations => new Promise((resolve, _) => {    
+  init = annotations => new Promise((resolve, _) => {
     const startTime = performance.now();
 
     // Discard all annotations without a TextPositionSelector
@@ -41,7 +61,7 @@ export default class Highlighter {
 
   _addAnnotation = (annotation, level) => {
     try {
-      const [ domStart, domEnd ] = this.charOffsetsToDOMPosition([ annotation.start, annotation.end ]);
+      const [domStart, domEnd] = this.charOffsetsToDOMPosition([annotation.start, annotation.end]);
 
       const range = document.createRange();
       range.setStart(domStart.node, domStart.offset);
@@ -61,27 +81,27 @@ export default class Highlighter {
   }
 
   _applyLevel = (annotation, spans, existingLevel) => {
-      if (existingLevel !== undefined) {
-        annotation.level = existingLevel;
-        return;
-      }
+    if (existingLevel !== undefined) {
+      annotation.level = existingLevel;
+      return;
+    }
 
-      const overlaps = [];
-      spans.forEach(span => {
-        const spanOverlaps = this.getAnnotationsAt(span).filter(a => a !== undefined);
-        overlaps.push(...spanOverlaps);
-      })
+    const overlaps = [];
+    spans.forEach(span => {
+      const spanOverlaps = this.getAnnotationsAt(span).filter(a => a !== undefined);
+      overlaps.push(...spanOverlaps);
+    })
 
-      const levels = overlaps.map(a => a.level).filter(l => l !== undefined);
-      let level = this._getFreeLevel(levels);
+    const levels = overlaps.map(a => a.level).filter(l => l !== undefined);
+    let level = this._getFreeLevel(levels);
 
-      annotation.level = level;
-      //console.debug("_applyLevel", annotation.id, level);      
+    annotation.level = level;
+    //console.debug("_applyLevel", annotation.id, level);      
   }
 
   _getFreeLevel = (levels) => {
     let nextLevel = 0;
-    
+
     while (true) {
       if (!levels.includes(nextLevel)) return nextLevel;
       nextLevel = nextLevel + 1;
@@ -90,7 +110,7 @@ export default class Highlighter {
 
   findAnnotationSpans = annotationOrId => {
     const id = annotationOrId.id || annotationOrId;
-    const spans =Array.from(document.querySelectorAll(`.r6o-annotation[data-id="${id}"]`));
+    const spans = Array.from(document.querySelectorAll(`.r6o-annotation[data-id="${id}"]`));
     return spans;
   }
 
@@ -146,11 +166,11 @@ export default class Highlighter {
    * 
    * @returns the updated annotation for convenience
    */
-  overrideId = (originalId, forcedId) => {    
+  overrideId = (originalId, forcedId) => {
     const allSpans = document.querySelectorAll(`.r6o-annotation[data-id="${originalId}"]`);
-    const annotation = allSpans[0].annotation; 
+    const annotation = allSpans[0].annotation;
 
-    const updatedAnnotation = annotation.clone({ id : forcedId });
+    const updatedAnnotation = annotation.clone({ id: forcedId });
     this.bindAnnotation(updatedAnnotation, allSpans);
 
     return updatedAnnotation;
@@ -206,7 +226,7 @@ export default class Highlighter {
         if (format.hasOwnProperty(key) && key.startsWith('data-')) {
           spans.forEach(span => span.setAttribute(key, format[key]));
         }
-      }  
+      }
     }
 
     // apply extra classes if there are any; ensure .r6o-annotation added regardless
@@ -246,9 +266,9 @@ export default class Highlighter {
 
     const textNodeProps = (() => {
       let start = 0;
-      return this.walkTextNodes(this.el, maxOffset).map(function(node) {
+      return this.walkTextNodes(this.el, maxOffset).map(function (node) {
         var nodeLength = node.textContent.length,
-            nodeProps = { node: node, start: start, end: start + nodeLength };
+          nodeProps = { node: node, start: start, end: start + nodeLength };
 
         start += nodeLength;
         return nodeProps;
@@ -285,12 +305,12 @@ export default class Highlighter {
   calculateDomPositionWithin = (textNodeProperties, charOffsets) => {
     var positions = [];
 
-    textNodeProperties.forEach(function(props, i) {
-      charOffsets.forEach(function(charOffset, j)  {
+    textNodeProperties.forEach(function (props, i) {
+      charOffsets.forEach(function (charOffset, j) {
         if (charOffset >= props.start && charOffset <= props.end) {
           // Don't attach nodes for the same charOffset twice
           var previousOffset = (positions.length > 0) ?
-                positions[positions.length - 1].charOffset : false;
+            positions[positions.length - 1].charOffset : false;
 
           if (previousOffset !== charOffset)
             positions.push({
@@ -318,7 +338,7 @@ export default class Highlighter {
     };
 
     if (range.startContainer === range.endContainer) {
-      return [ surround(range) ];
+      return [surround(range)];
     } else {
       // The tricky part - we need to break the range apart and create
       // sub-ranges for each segment
@@ -337,34 +357,34 @@ export default class Highlighter {
       var endWrapper = surround(endRange);
 
       // And wrap nodes in between, if any
-      var centerWrappers = nodesBetween.reverse().map(function(node) {
+      var centerWrappers = nodesBetween.reverse().map(function (node) {
         const wrapper = document.createElement('SPAN');
         node.parentNode.insertBefore(wrapper, node);
         wrapper.appendChild(node);
         return wrapper;
       });
 
-      return [ startWrapper ].concat(centerWrappers,  [ endWrapper ]);
+      return [startWrapper].concat(centerWrappers, [endWrapper]);
     }
   }
 
   getAnnotationsAt = element => {
     // Helper to get all annotations in case of multipe nested annotation spans
-    var getAnnotationsRecursive = function(element, a) {
-          var annotations = (a) ? a : [ ],
-              parent = element.parentNode;
+    var getAnnotationsRecursive = function (element, a) {
+      var annotations = (a) ? a : [],
+        parent = element.parentNode;
 
-          annotations.push(element.annotation);
+      annotations.push(element.annotation);
 
-          return (parent.classList.contains('r6o-annotation')) ?
-            getAnnotationsRecursive(parent, annotations) : annotations;
-        },
+      return (parent.classList.contains('r6o-annotation')) ?
+        getAnnotationsRecursive(parent, annotations) : annotations;
+    },
 
-        sortByStart = function(annotations) {
-          return annotations.sort(function(a, b) {
-            return a.start != b.start ? a.start - b.start : b.end - a.end
-          });
-        };
+      sortByStart = function (annotations) {
+        return annotations.sort(function (a, b) {
+          return a.start != b.start ? a.start - b.start : b.end - a.end
+        });
+      };
 
     return sortByStart(getAnnotationsRecursive(element));
   }
