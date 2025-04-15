@@ -1,6 +1,6 @@
 {
-  "name": "@samhammer/recogito-js",
-  "version": "0.0.0",
+  "name": "eu-eleysion-recogito-js",
+  "version": "0.0.2",
   "description": "A JavaScript library for text annotation",
   "main": "dist/recogito.min.js",
   "typings": "typings/index.d.ts",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SamhammerAG/recogito-js.git"
+    "url": "git+https://github.com/bfour/recogito-js.git"
   },
   "keywords": [
     "RecogitoJS",
@@ -24,9 +24,9 @@
     "url": "https://www.patreon.com/rainersimon"
   },
   "bugs": {
-    "url": "https://github.com/SamhammerAG/recogito-js/issues"
+    "url": "https://github.com/bfour/recogito-js/issues"
   },
-  "homepage": "https://github.com/SamhammerAG/recogito-js#readme",
+  "homepage": "https://github.com/bfour/recogito-js#readme",
   "babel": {
     "presets": [
       "@babel/preset-env",
