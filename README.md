@@ -1,6 +1,6 @@
 <p align="center">
   <br/>
-  <img width="270" src="https://raw.githubusercontent.com/recogito/recogito-js/master/recogitojs-logo-small.png" />
+  <img width="270" src="https://raw.githubusercontent.com/bfour/recogito-js/master/recogitojs-logo-small.png" />
   <br/><br/>
 </p>
 
@@ -26,7 +26,7 @@ import '@recogito/recogito-js/dist/recogito.min.css';
 const r = new Recogito({ content: 'my-content' });
 ```
 
-Otherwise download the [latest release](https://github.com/recogito/recogito-js/releases/latest) and
+Otherwise download the [latest release](https://www.npmjs.com/package/eu-eleysion-recogito-js) and
 include it in your web page.
 
 ```html
@@ -52,11 +52,6 @@ include it in your web page.
 </body>
 ```
 
-Full documentation is [on the Wiki](https://github.com/recogito/recogito-js/wiki). Questions? Feedack? Feature requests? Join the 
-[RecogitoJS chat on Gitter](https://gitter.im/recogito/recogito-js).
-
-[![Join the chat at https://gitter.im/recogito/recogito-js](https://badges.gitter.im/recogito/recogito-js.svg)](https://gitter.im/recogito/recogito-js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 ## License
 
 [BSD 3-Clause](LICENSE) (= feel free to use this code in whatever way
@@ -65,6 +60,5 @@ breaks something, don't complain to us :-)
 
 ## How to publish
 
--   Create & Push a tag with new version number
--   The CICD actions will take this version number for npm package automatically
--   Check github action to validated, that package was released to npm registry.
+-   Increase version in package.json.
+-   Check github action to validate, that package was released to npm registry.
