@@ -1,5 +1,9 @@
-declare module "@samhammer/recogito-js" {
-    export type RecogitoEvent = "createAnnotation" | "deleteAnnotation" | "selectAnnotation" | "updateAnnotation";
+declare module 'eu-eleysion-recogito-js' {
+    export type RecogitoEvent =
+        | 'createAnnotation'
+        | 'deleteAnnotation'
+        | 'selectAnnotation'
+        | 'updateAnnotation';
 
     export class Recogito {
         constructor(options: RecogitoOptions);
@@ -17,7 +21,7 @@ declare module "@samhammer/recogito-js" {
         off(eventName: RecogitoEvent, callback: Function);
     }
 
-    export interface FormatterResult{
+    export interface FormatterResult {
         className: string;
         style: string;
         [key: string]: string;
@@ -29,26 +33,28 @@ declare module "@samhammer/recogito-js" {
         readOnly?: boolean;
         disableEditor?: boolean;
         formatter?: (annotation: Annotation) => string | FormatterResult;
-        mode?: "html" | "pre";
+        mode?: 'html' | 'pre';
     }
 
-    export type AnnotationSelection = AnnotationSelectionQuote | AnnotationSelectionPosition;
+    export type AnnotationSelection =
+        | AnnotationSelectionQuote
+        | AnnotationSelectionPosition;
 
     export interface AnnotationSelectionQuote {
-        type: "TextQuoteSelector";
+        type: 'TextQuoteSelector';
         exact: string;
     }
 
     export interface AnnotationSelectionPosition {
-        type: "TextPositionSelector";
+        type: 'TextPositionSelector';
         start: number;
         end: number;
     }
 
     export interface AnnotationBody {
-        type: "TextualBody";
+        type: 'TextualBody';
         value: string;
-        purpose: "commenting" | "tagging";
+        purpose: 'commenting' | 'tagging';
         created?: string;
         creator?: {
             id: string;
@@ -64,6 +70,6 @@ declare module "@samhammer/recogito-js" {
         target: {
             selector: AnnotationSelection[];
         };
-        level?: number
+        level?: number;
     }
 }
