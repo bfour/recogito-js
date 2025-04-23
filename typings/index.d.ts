@@ -29,6 +29,10 @@ declare module 'eu-eleysion-recogito-js' {
 
     export interface RecogitoOptions {
         content: string | HTMLElement;
+        locale: string; // TODO 'auto' and ??. undocumented
+        allowEmpty?: boolean; // TODO confirm optional
+        widgets?: any; // TODO confirm
+        relationVocabulary?: Array<string>; // TODO confirm
         editorAutoPosition?: boolean;
         readOnly?: boolean;
         disableEditor?: boolean;
