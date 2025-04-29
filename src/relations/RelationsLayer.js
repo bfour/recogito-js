@@ -67,38 +67,9 @@ export default class RelationsLayer extends EventEmitter {
   }
 
   recomputeAll = () => {
-    // First reset all label positions
     this.connections.forEach(conn => {
-      conn.resetLabelPosition();
       conn.recompute();
-    });
-
-    // Then adjust positions to avoid overlaps
-    this.adjustLabelPositions();
-  }
-
-  /**
-   * Adjusts the positions of all connection labels to avoid overlaps
-   * @param {number} padding - Minimum padding between labels
-   */
-  adjustLabelPositions = (padding = 20) => {
-    // Sort connections by vertical position for more predictable layout
-    const sortedConnections = [...this.connections].sort((a, b) =>
-      (a.midXY[1] || 0) - (b.midXY[1] || 0)
-    );
-
-    // Check each connection against others for overlaps
-    for (let i = 0; i < sortedConnections.length; i++) {
-      const current = sortedConnections[i];
-
-      for (let j = i + 1; j < sortedConnections.length; j++) {
-        const other = sortedConnections[j];
-
-        if (current.hasLabelOverlap(other, padding)) {
-          current.adjustLabelPosition(other, padding);
-        }
-      }
-    }
+    })
   }
 
   addOrUpdateRelation = (relation, maybePrevious) => {
@@ -134,7 +105,7 @@ export default class RelationsLayer extends EventEmitter {
   /** Overrides the ID for an existing relation **/
   overrideRelationId = (originalId, forcedId) => {
     const conn = this.connections.find(c => c.annotation.id == originalId);
-    const updatedAnnotation = conn.annotation.clone({ id: forcedId });
+    const updatedAnnotation = conn.annotation.clone({ id : forcedId });
     conn.annotation = updatedAnnotation;
     return conn;
   }
@@ -183,10 +154,10 @@ export default class RelationsLayer extends EventEmitter {
 
   resetDrawing = () =>
     this.drawingTool.reset();
-  /*
-   *   get readOnly() {
-   *     this.svg.classList.contains('readonly');
-   *   } */
+    /*
+     *   get readOnly() {
+     *     this.svg.classList.contains('readonly');
+     *   } */
 
   set readOnly(readOnly) {
     if (readOnly)
