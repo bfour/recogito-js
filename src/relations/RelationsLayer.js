@@ -87,16 +87,45 @@ export default class RelationsLayer extends EventEmitter {
       (a.midXY[1] || 0) - (b.midXY[1] || 0)
     );
 
-    // Check each connection against others for overlaps
+    // First pass: detect all overlaps
+    const overlaps = [];
     for (let i = 0; i < sortedConnections.length; i++) {
-      const current = sortedConnections[i];
-
       for (let j = i + 1; j < sortedConnections.length; j++) {
-        const other = sortedConnections[j];
-
-        if (current.hasLabelOverlap(other, padding)) {
-          current.adjustLabelPosition(other, padding);
+        if (sortedConnections[i].hasLabelOverlap(sortedConnections[j], padding)) {
+          overlaps.push([i, j]);
         }
+      }
+    }
+
+    // Second pass: resolve overlaps
+    if (overlaps.length > 0) {
+      // Sort overlaps by vertical distance to resolve closest overlaps first
+      overlaps.sort((a, b) => {
+        const distA = Math.abs(sortedConnections[a[0]].midXY[1] - sortedConnections[a[1]].midXY[1]);
+        const distB = Math.abs(sortedConnections[b[0]].midXY[1] - sortedConnections[b[1]].midXY[1]);
+        return distA - distB;
+      });
+
+      // Resolve each overlap
+      overlaps.forEach(([i, j]) => {
+        sortedConnections[i].adjustLabelPosition(sortedConnections[j], padding);
+      });
+
+      // Final pass: check if any new overlaps were created
+      let hasNewOverlaps = false;
+      for (let i = 0; i < sortedConnections.length; i++) {
+        for (let j = i + 1; j < sortedConnections.length; j++) {
+          if (sortedConnections[i].hasLabelOverlap(sortedConnections[j], padding)) {
+            hasNewOverlaps = true;
+            break;
+          }
+        }
+        if (hasNewOverlaps) break;
+      }
+
+      // If new overlaps were created, try one more time with increased padding
+      if (hasNewOverlaps) {
+        this.adjustLabelPositions(padding * 1.5);
       }
     }
   }

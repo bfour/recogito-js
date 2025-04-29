@@ -256,12 +256,21 @@ export default class Connection extends EventEmitter {
     const selfBox = this.handle.getBoundingBox();
     const otherBox = other.handle.getBoundingBox();
 
-    return !(
+    // Add extra padding for vertical separation
+    const verticalPadding = padding * 1.5;
+
+    // Check for overlap with padding
+    const horizontalOverlap = !(
       selfBox.right + padding < otherBox.left ||
-      selfBox.left - padding > otherBox.right ||
-      selfBox.bottom + padding < otherBox.top ||
-      selfBox.top - padding > otherBox.bottom
+      selfBox.left - padding > otherBox.right
     );
+
+    const verticalOverlap = !(
+      selfBox.bottom + verticalPadding < otherBox.top ||
+      selfBox.top - verticalPadding > otherBox.bottom
+    );
+
+    return horizontalOverlap && verticalOverlap;
   }
 
   /**
@@ -275,19 +284,33 @@ export default class Connection extends EventEmitter {
     const selfBox = this.handle.getBoundingBox();
     const otherBox = other.handle.getBoundingBox();
 
-    // Calculate vertical offset needed
-    let verticalOffset = 0;
-    if (this.midXY[1] < other.midXY[1]) {
-      verticalOffset = -(padding + (selfBox.bottom - selfBox.top) / 2);
-    } else {
-      verticalOffset = padding + (selfBox.bottom - selfBox.top) / 2;
+    // Calculate the vertical distance needed to separate the labels
+    const verticalPadding = padding * 1.5;
+    const minVerticalDistance = (selfBox.height + otherBox.height) / 2 + verticalPadding;
+
+    // Determine which label should move based on their current positions
+    const currentDistance = Math.abs(this.midXY[1] - other.midXY[1]);
+    if (currentDistance < minVerticalDistance) {
+      // Calculate how much we need to move
+      const moveDistance = minVerticalDistance - currentDistance;
+
+      // Move this label up or down depending on its position relative to the other
+      if (this.midXY[1] < other.midXY[1]) {
+        // Move this label up
+        this.currentMidXY[1] -= moveDistance / 2;
+        // Move the other label down
+        other.currentMidXY[1] += moveDistance / 2;
+      } else {
+        // Move this label down
+        this.currentMidXY[1] += moveDistance / 2;
+        // Move the other label up
+        other.currentMidXY[1] -= moveDistance / 2;
+      }
+
+      // Redraw both connections
+      this.redraw();
+      other.redraw();
     }
-
-    // Apply the offset to the mid point
-    this.currentMidXY[1] += verticalOffset;
-
-    // Redraw the connection with the new position
-    this.redraw();
   }
 
   /**
@@ -303,9 +326,15 @@ export default class Connection extends EventEmitter {
     const deltaY = end[1] - start[1];
     const half = (Math.abs(deltaX) + Math.abs(deltaY)) / 2;
 
+    // Calculate the original position based on the connection orientation
+    const startsAtTop = end[1] <= (this.fromBounds.top + this.fromBounds.height / 2);
+    const originalY = startsAtTop ?
+      start[1] - (half - Math.abs(deltaX)) - CONST.LINE_DISTANCE :
+      start[1] + half - Math.abs(deltaX) + CONST.LINE_DISTANCE;
+
     this.currentMidXY = [
       start[0] + (half > Math.abs(deltaX) ? deltaX : half * Math.sign(deltaX)),
-      start[1] + (half > Math.abs(deltaX) ? half - Math.abs(deltaX) : 0)
+      originalY
     ];
 
     this.redraw();

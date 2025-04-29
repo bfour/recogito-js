@@ -76,4 +76,24 @@ export default class Handle extends EventEmitter {
   destroy = () =>
     this.svg.removeChild(this.g);
 
+  /**
+   * Gets the complete bounding box of the handle including background and arrow
+   * @returns {DOMRect} The bounding box of the entire handle
+   */
+  getBoundingBox = () => {
+    // Get the bounding box of the entire group
+    const bbox = this.g.getBBox();
+
+    // Add padding for the arrow and background
+    const padding = 8; // Arrow width
+    return {
+      left: bbox.x - padding,
+      right: bbox.x + bbox.width + padding,
+      top: bbox.y - padding,
+      bottom: bbox.y + bbox.height + padding,
+      width: bbox.width + (padding * 2),
+      height: bbox.height + (padding * 2)
+    };
+  }
+
 };
