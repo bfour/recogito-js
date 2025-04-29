@@ -18,8 +18,8 @@ export default class Handle extends EventEmitter {
     this.svg = svg;
 
     this.g = document.createElementNS(CONST.NAMESPACE, 'g');
-    this.text  = document.createElementNS(CONST.NAMESPACE, 'text');
-    this.rect  = document.createElementNS(CONST.NAMESPACE, 'rect');
+    this.text = document.createElementNS(CONST.NAMESPACE, 'text');
+    this.rect = document.createElementNS(CONST.NAMESPACE, 'rect');
     this.arrow = document.createElementNS(CONST.NAMESPACE, 'path');
 
     // Append first and init afterwards, so we can query text width/height
@@ -27,7 +27,7 @@ export default class Handle extends EventEmitter {
     this.g.appendChild(this.text);
     this.g.appendChild(this.arrow);
     this.svg.appendChild(this.g);
-    
+
     this.g.setAttribute('class', 'handle');
 
     this.text.innerHTML = escapeHtml(label);
@@ -40,9 +40,9 @@ export default class Handle extends EventEmitter {
     this.rect.setAttribute('rx', 2); // Rounded corners
     this.rect.setAttribute('ry', 2);
     this.rect.setAttribute('width', Math.round(this.bounds.width) + 5);
-    this.rect.setAttribute('height',  Math.round(this.bounds.height));
+    this.rect.setAttribute('height', Math.round(this.bounds.height));
 
-    this.arrow.setAttribute('class', 'r6o-arrow');    
+    this.arrow.setAttribute('class', 'r6o-arrow');
 
     this.rect.addEventListener('click', () => this.emit('click'));
   }
@@ -53,7 +53,7 @@ export default class Handle extends EventEmitter {
 
     const dx = Math.round(this.bounds.width / 2);
 
-    const createArrow = function() {
+    const createArrow = function () {
       if (orientation === 'left')
         return 'M' + (xy[0] - dx - 8) + ',' + (xy[1] - 4) + 'l-7,4l7,4';
       else if (orientation === 'right')
