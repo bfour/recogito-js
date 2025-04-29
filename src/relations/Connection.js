@@ -244,4 +244,71 @@ export default class Connection extends EventEmitter {
     return this.currentMidXY;
   }
 
+  /**
+   * Checks if this connection's label overlaps with another connection's label
+   * @param {Connection} other - The other connection to check against
+   * @param {number} padding - Minimum padding between labels
+   * @returns {boolean} - True if labels overlap
+   */
+  hasLabelOverlap(other, padding = 20) {
+    if (!this.handle || !other.handle) return false;
+
+    const selfBox = this.handle.getBoundingBox();
+    const otherBox = other.handle.getBoundingBox();
+
+    return !(
+      selfBox.right + padding < otherBox.left ||
+      selfBox.left - padding > otherBox.right ||
+      selfBox.bottom + padding < otherBox.top ||
+      selfBox.top - padding > otherBox.bottom
+    );
+  }
+
+  /**
+   * Adjusts the label position to avoid overlap with another connection
+   * @param {Connection} other - The other connection to avoid
+   * @param {number} padding - Minimum padding between labels
+   */
+  adjustLabelPosition(other, padding = 20) {
+    if (!this.handle || !other.handle) return;
+
+    const selfBox = this.handle.getBoundingBox();
+    const otherBox = other.handle.getBoundingBox();
+
+    // Calculate vertical offset needed
+    let verticalOffset = 0;
+    if (this.midXY[1] < other.midXY[1]) {
+      verticalOffset = -(padding + (selfBox.bottom - selfBox.top) / 2);
+    } else {
+      verticalOffset = padding + (selfBox.bottom - selfBox.top) / 2;
+    }
+
+    // Apply the offset to the mid point
+    this.currentMidXY[1] += verticalOffset;
+
+    // Redraw the connection with the new position
+    this.redraw();
+  }
+
+  /**
+   * Resets the label position to its original calculated position
+   */
+  resetLabelPosition() {
+    if (!this.fromBounds || !this.toBounds) return;
+
+    // Recalculate the original mid point
+    const start = this.fromBounds.topHandleXY;
+    const end = this.endXY;
+    const deltaX = end[0] - start[0];
+    const deltaY = end[1] - start[1];
+    const half = (Math.abs(deltaX) + Math.abs(deltaY)) / 2;
+
+    this.currentMidXY = [
+      start[0] + (half > Math.abs(deltaX) ? deltaX : half * Math.sign(deltaX)),
+      start[1] + (half > Math.abs(deltaX) ? half - Math.abs(deltaX) : 0)
+    ];
+
+    this.redraw();
+  }
+
 }
