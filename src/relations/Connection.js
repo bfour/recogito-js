@@ -16,10 +16,10 @@ export default class Connection extends EventEmitter {
 
     // SVG elements
     this.path = document.createElementNS(CONST.NAMESPACE, 'path'),
-    this.startDot = document.createElementNS(CONST.NAMESPACE, 'circle'),
-    this.endDot = document.createElementNS(CONST.NAMESPACE, 'circle'),
+      this.startDot = document.createElementNS(CONST.NAMESPACE, 'circle'),
+      this.endDot = document.createElementNS(CONST.NAMESPACE, 'circle'),
 
-    svgEl.appendChild(this.path);
+      svgEl.appendChild(this.path);
     svgEl.appendChild(this.startDot);
     svgEl.appendChild(this.endDot);
 
@@ -27,8 +27,8 @@ export default class Connection extends EventEmitter {
     // (when loading), or as a 'floating' relation, attached to a start
     // node (when drawing a new one).
     const props = nodeOrAnnotation.type === 'Annotation' ?
-     this.initFromAnnotation(contentEl, svgEl, nodeOrAnnotation) :
-     this.initFromStartNode(svgEl, nodeOrAnnotation);
+      this.initFromAnnotation(contentEl, svgEl, nodeOrAnnotation) :
+      this.initFromStartNode(svgEl, nodeOrAnnotation);
 
     this.annotation = props.annotation;
 
@@ -50,8 +50,8 @@ export default class Connection extends EventEmitter {
   }
 
   /** Initializes a fixed connection from an annotation **/
-  initFromAnnotation = function(contentEl, svgEl, annotation) {
-    const [ fromId, toId ] = annotation.target.map(t => t.id);
+  initFromAnnotation = function (contentEl, svgEl, annotation) {
+    const [fromId, toId] = annotation.target.map(t => t.id);
     const relation = annotation.bodies[0].value;
 
     const fromNode = getNodeById(contentEl, fromId);
@@ -77,7 +77,7 @@ export default class Connection extends EventEmitter {
   }
 
   /** Initializes a floating connection from a start node **/
-  initFromStartNode = function(svgEl, fromNode) {
+  initFromStartNode = function (svgEl, fromNode) {
     const fromBounds = new Bounds(fromNode.elements, svgEl);
     return { fromNode, fromBounds, floating: true };
   }
@@ -86,13 +86,13 @@ export default class Connection extends EventEmitter {
    * Fixes the end of the connection to the current end node,
    * turning a floating connection into a non-floating one.
    */
-  unfloat = function() {
+  unfloat = function () {
     if (this.currentEnd.elements)
       this.floating = false;
   }
 
   /** Moves the end of a (floating!) connection to the given [x,y] or node **/
-  dragTo = function(xyOrNode) {
+  dragTo = function (xyOrNode) {
     if (this.floating) {
       this.currentEnd = xyOrNode;
       if (xyOrNode.elements) {
@@ -112,7 +112,7 @@ export default class Connection extends EventEmitter {
   }
 
   /** Redraws this connection **/
-  redraw = function() {
+  redraw = function () {
     if (this.currentEnd) {
       const end = this.endXY;
 
@@ -135,7 +135,7 @@ export default class Connection extends EventEmitter {
       const d = CONST.LINE_DISTANCE - CONST.BORDER_RADIUS; // Shorthand: vertical straight line length
 
       // Path that starts at the top edge of the annotation highlight
-      const compileBottomPath = function() {
+      const compileBottomPath = function () {
         const arc1 = (deltaX > 0) ? CONST.ARC_9CC : CONST.ARC_3CW;
         const arc2 = (deltaX > 0) ? CONST.ARC_0CW : CONST.ARC_0CC;
 
@@ -144,16 +144,16 @@ export default class Connection extends EventEmitter {
           start[1] + CONST.LINE_DISTANCE;
 
         return 'M' + start[0] +
-                ' ' + start[1] +
-                'v' + d +
-                arc1 +
-                'h' + (deltaX - 2 * Math.sign(deltaX) * CONST.BORDER_RADIUS) +
-                arc2 +
-                'V' + end[1];
+          ' ' + start[1] +
+          'v' + d +
+          arc1 +
+          'h' + (deltaX - 2 * Math.sign(deltaX) * CONST.BORDER_RADIUS) +
+          arc2 +
+          'V' + end[1];
       };
 
       // Path that starts at the bottom edge of the annotation highlight
-      const compileTopPath = function() {
+      const compileTopPath = function () {
         const arc1 = (deltaX > 0) ? CONST.ARC_9CW : CONST.ARC_3CC;
         const arc2 = (deltaX > 0) ?
           (deltaY >= 0) ? CONST.ARC_0CW : CONST.ARC_6CC :
@@ -164,12 +164,12 @@ export default class Connection extends EventEmitter {
           start[1] - CONST.LINE_DISTANCE;
 
         return 'M' + start[0] +
-                ' ' + start[1] +
-                'v-' + (CONST.LINE_DISTANCE - CONST.BORDER_RADIUS) +
-                arc1 +
-                'h' + (deltaX - 2 * Math.sign(deltaX) * CONST.BORDER_RADIUS) +
-                arc2 +
-                'V' + end[1];
+          ' ' + start[1] +
+          'v-' + (CONST.LINE_DISTANCE - CONST.BORDER_RADIUS) +
+          arc1 +
+          'h' + (deltaX - 2 * Math.sign(deltaX) * CONST.BORDER_RADIUS) +
+          arc2 +
+          'V' + end[1];
       };
 
       this.startDot.setAttribute('cx', start[0]);
@@ -189,7 +189,7 @@ export default class Connection extends EventEmitter {
 
       this.path.setAttribute('class', 'connection');
 
-      this.currentMidXY = [ midX, midY ];
+      this.currentMidXY = [midX, midY];
 
       if (this.handle)
         this.handle.setPosition(this.currentMidXY, orientation);
@@ -236,8 +236,8 @@ export default class Connection extends EventEmitter {
   get endXY() {
     return (this.currentEnd instanceof Array) ?
       this.currentEnd :
-        (this.fromBounds.top > this.toBounds.top) ?
-          this.toBounds.bottomHandleXY : this.toBounds.topHandleXY;
+      (this.fromBounds.top > this.toBounds.top) ?
+        this.toBounds.bottomHandleXY : this.toBounds.topHandleXY;
   }
 
   get midXY() {

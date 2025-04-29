@@ -55,7 +55,7 @@ export default class RelationsLayer extends EventEmitter {
     }).reduce((conns, annotation) => {
       try {
         const c = this.createConnection(annotation);
-        return [ ...conns, c ];
+        return [...conns, c];
       } catch (error) {
         console.log(error);
         console.log(`Error rendering relation for annotation ${annotation.id}`);
