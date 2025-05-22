@@ -65,8 +65,22 @@ export default class Highlighter {
       const targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
       
       targets.forEach(target => {
-        const [domStart, domEnd] = this.charOffsetsToDOMPosition([target.selector.find(s => s.type === 'TextPositionSelector').start, 
-                                                                 target.selector.find(s => s.type === 'TextPositionSelector').end]);
+        // Find the TextPositionSelector
+        const positionSelector = target.selector.find(s => s.type === 'TextPositionSelector');
+        if (!positionSelector) {
+          console.warn('Annotation missing TextPositionSelector:', annotation);
+          return;
+        }
+
+        const [domStart, domEnd] = this.charOffsetsToDOMPosition([
+          positionSelector.start,
+          positionSelector.end
+        ]);
+
+        if (!domStart || !domEnd) {
+          console.warn('Could not find DOM positions for annotation:', annotation);
+          return;
+        }
 
         const range = document.createRange();
         range.setStart(domStart.node, domStart.offset);
@@ -79,9 +93,8 @@ export default class Highlighter {
         this.bindAnnotation(annotation, spans);
       });
     } catch (error) {
-      console.warn('Could not render annotation')
-      console.warn(error);
-      console.warn(annotation.underlying);
+      console.warn('Could not render annotation:', error);
+      console.warn('Annotation:', annotation);
     }
   }
 
