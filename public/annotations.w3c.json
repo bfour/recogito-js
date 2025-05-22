@@ -19,19 +19,21 @@
         "purpose": "tagging"
       }
     ],
-    "target": {
-      "selector": [
-        {
-          "type": "TextQuoteSelector",
-          "exact": "Troy"
-        },
-        {
-          "type": "TextPositionSelector",
-          "start": 124,
-          "end": 128
-        }
-      ]
-    }
+    "target": [
+      {
+        "selector": [
+          {
+            "type": "TextQuoteSelector",
+            "exact": "Troy"
+          },
+          {
+            "type": "TextPositionSelector",
+            "start": 124,
+            "end": 128
+          }
+        ]
+      }
+    ]
   },
   {
     "@context": "http://www.w3.org/ns/anno.jsonld",
