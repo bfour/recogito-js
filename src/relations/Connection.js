@@ -51,13 +51,21 @@ export default class Connection extends EventEmitter {
 
   /** Initializes a fixed connection from an annotation **/
   initFromAnnotation = function (contentEl, svgEl, annotation) {
-    const [fromId, toId] = annotation.target.map(t => t.id);
+    // For relations, target should be an array of objects with id
+    const targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
+    const [fromId, toId] = targets.map(t => t.id);
     const relation = annotation.bodies[0].value;
 
     const fromNode = getNodeById(contentEl, fromId);
+    if (!fromNode) {
+      throw new Error(`Could not find start node for relation ${annotation.id} (target: ${fromId})`);
+    }
     const fromBounds = new Bounds(fromNode.elements, svgEl);
 
     const toNode = getNodeById(contentEl, toId);
+    if (!toNode) {
+      throw new Error(`Could not find end node for relation ${annotation.id} (target: ${toId})`);
+    }
     const toBounds = new Bounds(toNode.elements, svgEl);
 
     const currentEnd = toNode;
@@ -78,6 +86,9 @@ export default class Connection extends EventEmitter {
 
   /** Initializes a floating connection from a start node **/
   initFromStartNode = function (svgEl, fromNode) {
+    if (!fromNode || !fromNode.elements) {
+      throw new Error('Invalid start node for floating connection');
+    }
     const fromBounds = new Bounds(fromNode.elements, svgEl);
     return { fromNode, fromBounds, floating: true };
   }
