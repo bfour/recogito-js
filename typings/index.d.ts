@@ -73,7 +73,9 @@ declare module 'eu-eleysion-recogito-js' {
         body: AnnotationBody[];
         target: {
             selector: AnnotationSelection[];
-        };
+        } | Array<{
+            selector: AnnotationSelection[];
+        }>;
         level?: number;
     }
 }

@@ -61,18 +61,23 @@ export default class Highlighter {
 
   _addAnnotation = (annotation, level) => {
     try {
-      const [domStart, domEnd] = this.charOffsetsToDOMPosition([annotation.start, annotation.end]);
+      // Handle both single target and multiple targets
+      const targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
+      
+      targets.forEach(target => {
+        const [domStart, domEnd] = this.charOffsetsToDOMPosition([target.selector.find(s => s.type === 'TextPositionSelector').start, 
+                                                                 target.selector.find(s => s.type === 'TextPositionSelector').end]);
 
-      const range = document.createRange();
-      range.setStart(domStart.node, domStart.offset);
-      range.setEnd(domEnd.node, domEnd.offset);
+        const range = document.createRange();
+        range.setStart(domStart.node, domStart.offset);
+        range.setEnd(domEnd.node, domEnd.offset);
 
-      const spans = this.wrapRange(range);
+        const spans = this.wrapRange(range);
 
-      //console.debug("_addAnnotation", annotation.id, level);
-      this._applyLevel(annotation, spans, level);
-      this.applyStyles(annotation, spans);
-      this.bindAnnotation(annotation, spans);
+        this._applyLevel(annotation, spans, level);
+        this.applyStyles(annotation, spans);
+        this.bindAnnotation(annotation, spans);
+      });
     } catch (error) {
       console.warn('Could not render annotation')
       console.warn(error);
