@@ -141,6 +141,7 @@ export default class DrawingTool extends EventEmitter {
     const [ midX, midY ] = this.currentConnection.midXY;
 
     const annotation = WebAnnotation.create({
+      motivation: 'linking',
       target: [
         { id: from.id },
         { id: to.id }
