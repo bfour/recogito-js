@@ -32,6 +32,19 @@
             "end": 128
           }
         ]
+      },
+      {
+        "selector": [
+          {
+            "type": "TextQuoteSelector",
+            "exact": "Troy"
+          },
+          {
+            "type": "TextPositionSelector",
+            "start": 124,
+            "end": 128
+          }
+        ]
       }
     ]
   },
