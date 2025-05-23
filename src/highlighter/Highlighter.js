@@ -91,12 +91,16 @@ export default class Highlighter {
 
   _addAnnotation = (annotation, level, target) => {
     try {
-      // Use the provided target or fall back to the first target
-      const targetToUse =
-        target ??
-        (Array.isArray(annotation.target)
-          ? annotation.target[0]
-          : annotation.target);
+      // Use the provided target or find one with a TextPositionSelector
+      const targetToUse = target ?? (() => {
+        const targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
+        return targets.find(t => t.selector?.some(s => s.type === 'TextPositionSelector'));
+      })();
+
+      if (!targetToUse) {
+        console.warn('No target with TextPositionSelector found for annotation:', annotation);
+        return;
+      }
 
       // Find the TextPositionSelector
       const positionSelector = targetToUse.selector.find(
