@@ -4,8 +4,7 @@ const uniqueItems = items => Array.from(new Set(items))
 
 const baseFormatter = (annotation) => {
   const tags = annotation.body.filter(b => b.purpose === 'tagging').map(b => b.value);
-  const text = annotation.target.selector.find(s => s.type === 'TextQuoteSelector')?.exact;
-  console.debug('format', tags, text, annotation.level);
+  console.debug('format', tags, annotation.level);
 
   const result = {
     className: ""
