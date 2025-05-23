@@ -32,20 +32,35 @@ export default class Highlighter {
     const startTime = performance.now();
 
     // Discard all annotations without a TextPositionSelector
-    const highlights = annotations.filter(a => a.selector('TextPositionSelector'));
+    console.log('annotations', annotations);
+    const highlights = annotations.flatMap(annotation => {
+      // For each annotation, create a highlight entry for each valid target (i.e. with a TextPositionSelector)
+      return annotation.targets
+        .filter(target =>
+          target.selector != null &&
+          target.selector.some(s => s.type === 'TextPositionSelector')
+        )
+        .map(target => ({
+          annotation: annotation,
+          target: target,
+          start: target.selector.find(s => s.type === 'TextPositionSelector').start,
+          end: target.selector.find(s => s.type === 'TextPositionSelector').end
+        }));
+    });
+    console.log('highlights', highlights);
 
     // Sorting top to bottom will render the overlapping annonation borders better
     highlights.sort((a, b) => {
-      return a.start != b.start ? a.start - b.start : b.end - a.end
+      return a.start !== b.start ? a.start - b.start : b.end - a.end;
     });
 
     // Render loop
-    const render = annotations => {
-      const batch = annotations.slice(0, RENDER_BATCH_SIZE);
-      const remainder = annotations.slice(RENDER_BATCH_SIZE);
+    const render = highlights => {
+      const batch = highlights.slice(0, RENDER_BATCH_SIZE);
+      const remainder = highlights.slice(RENDER_BATCH_SIZE);
 
       requestAnimationFrame(() => {
-        batch.forEach((annotation) => this._addAnnotation(annotation));
+        batch.forEach((highlight) => this._addAnnotation(highlight.annotation, undefined, highlight.target));
         if (remainder.length > 0) {
           render(remainder);
         } else {
@@ -58,39 +73,37 @@ export default class Highlighter {
     render(highlights);
   })
 
-  _addAnnotation = (annotation, level) => {
+  _addAnnotation = (annotation, level, target) => {
     try {
-      // Handle both single target and multiple targets
-      const targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
-      
-      targets.forEach(target => {
-        // Find the TextPositionSelector
-        const positionSelector = target.selector.find(s => s.type === 'TextPositionSelector');
-        if (!positionSelector) {
-          console.warn('Annotation missing TextPositionSelector:', annotation);
-          return;
-        }
+      // Use the provided target or fall back to the first target
+      const targetToUse = target ?? (Array.isArray(annotation.target) ? annotation.target[0] : annotation.target);
 
-        const [domStart, domEnd] = this.charOffsetsToDOMPosition([
-          positionSelector.start,
-          positionSelector.end
-        ]);
+      // Find the TextPositionSelector
+      const positionSelector = targetToUse.selector.find(s => s.type === 'TextPositionSelector');
+      if (!positionSelector) {
+        console.warn('Annotation missing TextPositionSelector:', annotation);
+        return;
+      }
 
-        if (!domStart || !domEnd) {
-          console.warn('Could not find DOM positions for annotation:', annotation);
-          return;
-        }
+      const [domStart, domEnd] = this.charOffsetsToDOMPosition([
+        positionSelector.start,
+        positionSelector.end
+      ]);
 
-        const range = document.createRange();
-        range.setStart(domStart.node, domStart.offset);
-        range.setEnd(domEnd.node, domEnd.offset);
+      if (!domStart || !domEnd) {
+        console.warn('Could not find DOM positions for annotation:', annotation);
+        return;
+      }
 
-        const spans = this.wrapRange(range);
+      const range = document.createRange();
+      range.setStart(domStart.node, domStart.offset);
+      range.setEnd(domEnd.node, domEnd.offset);
 
-        this._applyLevel(annotation, spans, level);
-        this.applyStyles(annotation, spans);
-        this.bindAnnotation(annotation, spans);
-      });
+      const spans = this.wrapRange(range);
+
+      this._applyLevel(annotation, spans, level);
+      this.applyStyles(annotation, spans);
+      this.bindAnnotation(annotation, spans);
     } catch (error) {
       console.warn('Could not render annotation:', error);
       console.warn('Annotation:', annotation);
