@@ -2,14 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import {
-  WebAnnotation,
-  createEnvironment,
-  setLocale
-} from '@recogito/recogito-client-core';
+    WebAnnotation,
+    createEnvironment,
+    setLocale,
+} from 'eu-eleysion-recogito-client-core';
 import TextAnnotator from './TextAnnotator';
 import { deflateHTML } from './utils';
 
-import '@recogito/recogito-client-core/themes/default';
+import 'eu-eleysion-recogito-client-core/themes/default';
 
 /**
  * The entrypoint into the application. Provides the

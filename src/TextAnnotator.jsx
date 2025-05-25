@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Editor } from '@recogito/recogito-client-core';
+import { Editor } from 'eu-eleysion-recogito-client-core';
 import Highlighter from './highlighter/Highlighter';
 import SelectionHandler from './selection/SelectionHandler';
 import RelationsLayer from './relations/RelationsLayer';

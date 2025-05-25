@@ -1,4 +1,4 @@
-import { Selection } from '@recogito/recogito-client-core';
+import { Selection } from 'eu-eleysion-recogito-client-core';
 
 export const trimRange = range => {
   let quote = range.toString();
