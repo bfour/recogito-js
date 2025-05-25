@@ -16,185 +16,195 @@ import 'eu-eleysion-recogito-client-core/themes/default';
  * externally visible JavaScript API.
  */
 export class Recogito {
+    constructor(config) {
+        // API calls to this instance are forwarded through a ref
+        this._app = React.createRef();
 
-  constructor(config) {
-    // API calls to this instance are forwarded through a ref
-    this._app = React.createRef();
+        // Event handling via tiny-emitter
+        this._emitter = new Emitter();
 
-    // Event handling via tiny-emitter
-    this._emitter = new Emitter();
+        // Environment settings container
+        this._environment = createEnvironment();
 
-    // Environment settings container
-    this._environment = createEnvironment();
+        // The content element (which contains the text we want to annotate)
+        // is wrapped in a DIV ('wrapperEl'). The application container DIV,
+        // which holds the editor popup, will be attached as a child to the
+        // wrapper element (=a sibling to the content element). This way,
+        // content and editor share the same CSS position reference frame.
+        //
+        // <wrapperEl>
+        //   <contentEl />
+        //   <appContainerEl />
+        // </wrapperEl>
+        //
+        let contentEl = config.content.nodeType
+            ? config.content
+            : document.getElementById(config.content);
 
-    // The content element (which contains the text we want to annotate)
-    // is wrapped in a DIV ('wrapperEl'). The application container DIV,
-    // which holds the editor popup, will be attached as a child to the
-    // wrapper element (=a sibling to the content element). This way,
-    // content and editor share the same CSS position reference frame.
-    //
-    // <wrapperEl>
-    //   <contentEl />
-    //   <appContainerEl />
-    // </wrapperEl>
-    //
-    let contentEl = (config.content.nodeType) ?
-      config.content : document.getElementById(config.content);
+        // Deep-clone the original node, so we can easily destroy the Recogito instance
+        this._originalContent = contentEl.cloneNode(true);
 
-    // Deep-clone the original node, so we can easily destroy the Recogito instance
-    this._originalContent = contentEl.cloneNode(true);
+        // Unless this is preformatted text, remove multi spaces and
+        // empty text nodes, so that HTML char offsets == browser offsets.
+        if (config.mode !== 'pre') contentEl = deflateHTML(contentEl);
 
-    // Unless this is preformatted text, remove multi spaces and
-    // empty text nodes, so that HTML char offsets == browser offsets.
-    if (config.mode !== 'pre')
-      contentEl = deflateHTML(contentEl);
+        this._wrapperEl = document.createElement('DIV');
+        this._wrapperEl.className = 'r6o-content-wrapper';
+        this._wrapperEl.style.position = 'relative';
 
-    this._wrapperEl = document.createElement('DIV');
-    this._wrapperEl.className = 'r6o-content-wrapper';
-    this._wrapperEl.style.position = 'relative';
+        if (contentEl instanceof HTMLBodyElement) {
+            this._wrapperEl.append(...contentEl.childNodes);
+            contentEl.appendChild(this._wrapperEl);
+        } else {
+            contentEl.parentNode.insertBefore(this._wrapperEl, contentEl);
+            this._wrapperEl.appendChild(contentEl);
+        }
 
-    if (contentEl instanceof HTMLBodyElement) {
-      this._wrapperEl.append(...contentEl.childNodes);
-      contentEl.appendChild(this._wrapperEl);
-    } else {
-      contentEl.parentNode.insertBefore(this._wrapperEl, contentEl);
-      this._wrapperEl.appendChild(contentEl);
+        this._appContainerEl = document.createElement('DIV');
+        this._wrapperEl.appendChild(this._appContainerEl);
+
+        setLocale(config.locale);
+
+        ReactDOM.render(
+            <TextAnnotator
+                ref={this._app}
+                env={this._environment}
+                contentEl={contentEl}
+                wrapperEl={this._wrapperEl}
+                config={config}
+                onAnnotationSelected={this.handleAnnotationSelected}
+                onAnnotationCreated={this.handleAnnotationCreated}
+                onAnnotationUpdated={this.handleAnnotationUpdated}
+                onAnnotationDeleted={this.handleAnnotationDeleted}
+                onCancelSelected={this.handleCancelSelected}
+                relationVocabulary={config.relationVocabulary}
+            />,
+            this._appContainerEl
+        );
     }
 
+    handleAnnotationSelected = (annotation, element) =>
+        this._emitter.emit('selectAnnotation', annotation.underlying, element);
 
-    this._appContainerEl = document.createElement('DIV');
-    this._wrapperEl.appendChild(this._appContainerEl);
+    handleAnnotationCreated = (annotation, overrideId) =>
+        this._emitter.emit(
+            'createAnnotation',
+            annotation.underlying,
+            overrideId
+        );
 
-    setLocale(config.locale);
+    handleAnnotationUpdated = (annotation, previous) =>
+        this._emitter.emit(
+            'updateAnnotation',
+            annotation.underlying,
+            previous.underlying
+        );
 
-    ReactDOM.render(
-      <TextAnnotator
-        ref={this._app}
-        env={this._environment}
-        contentEl={contentEl}
-        wrapperEl={this._wrapperEl}
-        config={config}
-        onAnnotationSelected={this.handleAnnotationSelected}
-        onAnnotationCreated={this.handleAnnotationCreated}
-        onAnnotationUpdated={this.handleAnnotationUpdated}
-        onAnnotationDeleted={this.handleAnnotationDeleted}
-        onCancelSelected={this.handleCancelSelected}
-        relationVocabulary={config.relationVocabulary} />, this._appContainerEl);
-  }
+    handleAnnotationDeleted = (annotation) =>
+        this._emitter.emit('deleteAnnotation', annotation.underlying);
 
-  handleAnnotationSelected = (annotation, element) =>
-    this._emitter.emit('selectAnnotation', annotation.underlying, element);
+    handleCancelSelected = (annotation) =>
+        this._emitter.emit('cancelSelected', annotation.underlying);
 
-  handleAnnotationCreated = (annotation, overrideId) =>
-    this._emitter.emit('createAnnotation', annotation.underlying, overrideId);
+    /******************/
+    /*  External API  */
+    /******************/
 
-  handleAnnotationUpdated = (annotation, previous) =>
-    this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
+    // Common shorthand for handling annotationOrId args
+    _wrap = (annotationOrId) =>
+        annotationOrId?.type === 'Annotation'
+            ? new WebAnnotation(annotationOrId)
+            : annotationOrId;
 
-  handleAnnotationDeleted = annotation =>
-    this._emitter.emit('deleteAnnotation', annotation.underlying);
+    addAnnotation = (annotation) =>
+        this._app.current.addAnnotation(new WebAnnotation(annotation));
 
-  handleCancelSelected = annotation =>
-    this._emitter.emit('cancelSelected', annotation.underlying);
+    clearAnnotations = () => this.setAnnotations(null);
 
-  /******************/
-  /*  External API  */
-  /******************/
+    clearAuthInfo = () => (this._environment.user = null);
 
-  // Common shorthand for handling annotationOrId args
-  _wrap = annotationOrId =>
-    annotationOrId?.type === 'Annotation' ? new WebAnnotation(annotationOrId) : annotationOrId;
+    destroy = () => {
+        ReactDOM.unmountComponentAtNode(this._appContainerEl);
+        this._wrapperEl.parentNode.insertBefore(
+            this._originalContent,
+            this._wrapperEl
+        );
+        this._wrapperEl.parentNode.removeChild(this._wrapperEl);
+    };
 
-  addAnnotation = annotation =>
-    this._app.current.addAnnotation(new WebAnnotation(annotation));
+    get disableEditor() {
+        return this._app.current.disableEditor;
+    }
 
-  clearAnnotations = () =>
-    this.setAnnotations(null);
+    set disableEditor(disabled) {
+        this._app.current.disableEditor = disabled;
+    }
 
-  clearAuthInfo = () =>
-    this._environment.user = null;
+    get disableSelect() {
+        return this._app.current.disableSelect;
+    }
 
-  destroy = () => {
-    ReactDOM.unmountComponentAtNode(this._appContainerEl);
-    this._wrapperEl.parentNode.insertBefore(this._originalContent, this._wrapperEl);
-    this._wrapperEl.parentNode.removeChild(this._wrapperEl);
-  }
+    set disableSelect(select) {
+        this._app.current.disableSelect = select;
+    }
 
-  get disableEditor() {
-    return this._app.current.disableEditor;
-  }
+    getAnnotations = () => {
+        const annotations = this._app.current.getAnnotations();
+        return annotations.map((a) => a.underlying);
+    };
 
-  set disableEditor(disabled) {
-    this._app.current.disableEditor = disabled;
-  }
+    loadAnnotations = (url, requestArgs) =>
+        fetch(url, requestArgs)
+            .then((response) => response.json())
+            .then((annotations) => {
+                return this.setAnnotations(annotations).then(() => annotations);
+            });
 
-  get disableSelect() {
-    return this._app.current.disableSelect;
-  }
+    off = (event, callback) => this._emitter.off(event, callback);
 
-  set disableSelect(select) {
-    this._app.current.disableSelect = select;
-  }
+    on = (event, handler) => this._emitter.on(event, handler);
 
-  getAnnotations = () => {
-    const annotations = this._app.current.getAnnotations();
-    return annotations.map(a => a.underlying);
-  }
+    get readOnly() {
+        return this._app.current.readOnly;
+    }
 
-  loadAnnotations = (url, requestArgs) => fetch(url, requestArgs)
-    .then(response => response.json()).then(annotations => {
-      return this.setAnnotations(annotations).then(() => annotations);
-    });
+    set readOnly(readOnly) {
+        this._app.current.readOnly = readOnly;
+    }
 
-  off = (event, callback) =>
-    this._emitter.off(event, callback);
+    removeAnnotation = (annotation) =>
+        this._app.current.removeAnnotation(new WebAnnotation(annotation));
 
-  on = (event, handler) =>
-    this._emitter.on(event, handler);
+    selectAnnotation = (annotationOrId) => {
+        const selected = this._app.current.selectAnnotation(
+            this._wrap(annotationOrId)
+        );
+        return selected?.underlying;
+    };
 
-  get readOnly() {
-    return this._app.current.readOnly;
-  }
+    setAnnotations = (arg) => {
+        const annotations = arg || [];
+        const webannotations = annotations.map((a) => new WebAnnotation(a));
+        return this._app.current.setAnnotations(webannotations);
+    };
 
-  set readOnly(readOnly) {
-    this._app.current.readOnly = readOnly;
-  }
+    setAuthInfo = (authinfo) => (this._environment.user = authinfo);
 
-  removeAnnotation = annotation =>
-    this._app.current.removeAnnotation(new WebAnnotation(annotation));
+    /**
+     * Activates annotation or relationship drawing mode.
+     * @param mode a string, either ANNOTATION (default) or RELATIONS
+     */
+    setMode = (mode) => this._app.current.setMode(mode);
 
-  selectAnnotation = annotationOrId => {
-    const selected = this._app.current.selectAnnotation(this._wrap(annotationOrId));
-    return selected?.underlying;
-  }
+    setServerTime = (timestamp) => this._environment.setServerTime(timestamp);
 
-  setAnnotations = arg => {
-    const annotations = arg || [];
-    const webannotations = annotations.map(a => new WebAnnotation(a));
-    return this._app.current.setAnnotations(webannotations);
-  }
+    get widgets() {
+        return this._app.current.widgets;
+    }
 
-  setAuthInfo = authinfo =>
-    this._environment.user = authinfo;
-
-  /**
-   * Activates annotation or relationship drawing mode.
-   * @param mode a string, either ANNOTATION (default) or RELATIONS
-   */
-  setMode = mode =>
-    this._app.current.setMode(mode);
-
-  setServerTime = timestamp =>
-    this._environment.setServerTime(timestamp);
-
-  get widgets() {
-    return this._app.current.widgets;
-  }
-
-  set widgets(widgets) {
-    this._app.current.widgets = widgets;
-  }
-
+    set widgets(widgets) {
+        this._app.current.widgets = widgets;
+    }
 }
 
-export const init = config => new Recogito(config);
+export const init = (config) => new Recogito(config);

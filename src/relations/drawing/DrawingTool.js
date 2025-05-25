@@ -69,11 +69,11 @@ export default class DrawingTool extends EventEmitter {
 
   onMouseMove = evt => {
     if (this.currentConnection && this.currentConnection.isFloating) {
-      if (this.currentHover)  {
+      if (this.currentHover) {
         this.currentConnection.dragTo(this.currentHover.node);
       } else {
         const { top, left } = this.contentEl.getBoundingClientRect();
-        this.currentConnection.dragTo([ evt.clientX - left, evt.clientY - top]);
+        this.currentConnection.dragTo([evt.clientX - left, evt.clientY - top]);
       }
     }
   }
@@ -131,14 +131,14 @@ export default class DrawingTool extends EventEmitter {
   }
 
   /** Complete drawing of a new connection **/
-  completeConnection = function() {
+  completeConnection = function () {
     this.currentConnection.unfloat();
 
     this.contentEl.classList.remove('r6o-drawing');
 
     const from = this.currentConnection.startAnnotation;
     const to = this.currentConnection.endAnnotation;
-    const [ midX, midY ] = this.currentConnection.midXY;
+    const [midX, midY] = this.currentConnection.midXY;
 
     const annotation = WebAnnotation.create({
       motivation: 'linking',
