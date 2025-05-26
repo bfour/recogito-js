@@ -2288,10 +2288,10 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-eu-eleysion-recogito-client-core@1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/eu-eleysion-recogito-client-core/-/eu-eleysion-recogito-client-core-1.8.1.tgz#1ae76e5764be67dc4ddba3e54e60843d18744de8"
-  integrity sha512-U98PhydnALM5r6E1qmQXS9n6vm5nw6bWiFdvnb4oFO8wv0I3ttyUVMWFfiBJRjQZboBuaLegoCSAKoVpOGq9Cw==
+eu-eleysion-recogito-client-core@1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/eu-eleysion-recogito-client-core/-/eu-eleysion-recogito-client-core-1.8.2.tgz#5300d769b4204d78c7b878dfe821c79cc94a6549"
+  integrity sha512-KiyxBUzCHma+vSiWHxJFFwwnjilpdbYXswiIm7AXX4/H+EfuX+tsWIYU1w/zEqt7+z2ohKi5pLNJZP+SAloZGA==
   dependencies:
     core-js "3.18.3"
     fast-deep-equal "3.1.3"
