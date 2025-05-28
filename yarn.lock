@@ -2288,13 +2288,14 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-eu-eleysion-recogito-client-core@1.8.4:
-  version "1.8.4"
-  resolved "https://registry.yarnpkg.com/eu-eleysion-recogito-client-core/-/eu-eleysion-recogito-client-core-1.8.4.tgz#f527b1be23f73116fcbd1dcc580783706b261b34"
-  integrity sha512-P96vxOphnUWeHf5WftWAGIoMLanrkhshwIL6OlUnqZec2UM0Wx7RBUM3GOJ0p/hC/ew4BAc12AnDDD0Zfv6rJg==
+eu-eleysion-recogito-client-core@1.8.5:
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/eu-eleysion-recogito-client-core/-/eu-eleysion-recogito-client-core-1.8.5.tgz#bc6de0ce5b1a1f20d6a98b92361ef75a1b84a7bb"
+  integrity sha512-9KE/HJV9xtg/h2uOZFXoqcAfYSP7P5TXX8I8wZM/LsEdv0Zt9fnZS6TiNBqppTITeo0x83dQ/MIgp/bjCAgfBQ==
   dependencies:
     core-js "3.18.3"
     fast-deep-equal "3.1.3"
+    lodash "4.17.21"
     node-polyglot "2.4.0"
     react-autosize-textarea "7.1.0"
     react-draggable "4.4.3"
@@ -3187,7 +3188,7 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
 
-lodash@^4.17.20, lodash@^4.17.21:
+lodash@4.17.21, lodash@^4.17.20, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
