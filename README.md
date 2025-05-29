@@ -52,6 +52,19 @@ include it in your web page.
 </body>
 ```
 
+## Changes from Original Recogito
+
+### Multiple Targets Support
+- Support for annotations with multiple targets as per [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/#cardinality-of-bodies-and-targets)
+
+### UI Improvements
+- Added rounded borders in body editor
+- Improved visualization for overlapping annotations
+
+### Bug Fixes
+- Improved handling of nested annotations
+- Better error handling and logging for invalid annotations
+
 ## License
 
 [BSD 3-Clause](LICENSE) (= feel free to use this code in whatever way
