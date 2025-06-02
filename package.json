@@ -1,6 +1,6 @@
 {
   "name": "eu-eleysion-recogito-js",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "A JavaScript library for text annotation",
   "main": "dist/recogito.min.js",
   "typings": "typings/index.d.ts",
@@ -54,7 +54,7 @@
     "webpack-dev-server": "4.15.1"
   },
   "dependencies": {
-    "eu-eleysion-recogito-client-core": "1.9.5",
+    "eu-eleysion-recogito-client-core": "1.9.6",
     "preact": "10.5.14",
     "tiny-emitter": "2.1.0"
   }
