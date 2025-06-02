@@ -54,7 +54,7 @@
     "webpack-dev-server": "4.15.1"
   },
   "dependencies": {
-    "eu-eleysion-recogito-client-core": "1.8.5",
+    "eu-eleysion-recogito-client-core": "1.9.5",
     "preact": "10.5.14",
     "tiny-emitter": "2.1.0"
   }
